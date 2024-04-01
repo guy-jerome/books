@@ -1,33 +1,37 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from '/vite.svg'
-import './app.css'
-
+import { useState, useRef } from "preact/hooks";
+import "./app.css";
+import Book from "./Book";
 export function App() {
-  const [count, setCount] = useState(0)
-
+  const [book, setBook] = useState("");
+  const [books, setBooks] = useState([]);
+  const bookId = useRef(0);
+  function handleAddBook() {
+    if (book.trim() !== "") {
+      setBooks([...books, { name: book, id: bookId.current }]);
+      bookId.current += 1;
+      setBook("");
+    }
+  }
+  function handleRemoveBook(id) {
+    setBooks(books.filter((book) => book.id !== id));
+  }
   return (
-    <>
+    <div>
+      <h1>Books I want to read</h1>
+      <label htmlFor="book-input">Enter a Book</label>
+      <input
+        type="text"
+        value={book}
+        onChange={(e) => {
+          setBook(e.target.value);
+        }}
+      ></input>
+      <button onClick={handleAddBook}>+</button>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://preactjs.com" target="_blank">
-          <img src={preactLogo} class="logo preact" alt="Preact logo" />
-        </a>
+        {books.map((book) => (
+          <Book book={book} handleRemoveBook={handleRemoveBook} />
+        ))}
       </div>
-      <h1>Vite + Preact</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/app.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p class="read-the-docs">
-        Click on the Vite and Preact logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
